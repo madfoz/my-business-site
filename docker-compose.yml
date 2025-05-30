@@ -1,9 +1,11 @@
+# docker-compose.yml
 services:
+
   hugo:
     image: klakegg/hugo:ext-alpine
+    working_dir: /src
     volumes:
       - .:/src
-    working_dir: /src
     ports:
       - "1313:1313"
     command: server --bind=0.0.0.0 --disableFastRender
@@ -11,14 +13,29 @@ services:
   cms-proxy:
     image: node:16-alpine
     restart: on-failure
+    working_dir: /repo
     volumes:
       - .:/repo
-    working_dir: /repo
+    ports:
+      - "8081:8081"
     environment:
-      - GIT_REPO_DIRECTORY=/repo       # point the proxy at your local Git checkout
-      - PORT=8081                      # tell it what port to listen on
+      # Point the proxy at your local Git checkout
+      - GIT_REPO_DIRECTORY=/repo
+
+      # What port the proxy listens on
+      - PORT=8081
+
+      # Your GitHub repo details
+      - REPO=madfoz/my-business-site
+      - BRANCH=main
+
+      # Use GitHub as the backend API
+      - API=github
+
+      # GitHub OAuth credentials from your OAuth App
+      - GITHUB_AUTH_CLIENT_ID= Ov23lio1354pLhYFWsky 
+      - GITHUB_AUTH_CLIENT_SECRET=387f2c683d80fec7f737cb6d9fc959ac44fb033c
+
     command: >
       sh -c "npm install netlify-cms-proxy-server@^1.3.24 &&
              npx netlify-cms-proxy-server"
-    ports:
-      - "8081:8081"
