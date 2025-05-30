@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  hugo:
+    image: klakegg/hugo:ext-alpine
+    volumes:
+      - .:/src
+    working_dir: /src
+    ports:
+      - "1313:1313"
+    command: server --bind=0.0.0.0 --disableFastRender
+
+  cms-proxy:
+    image: staticcms/netlify-cms-proxy-server
+    environment:
+      - REPO=madfoz/my-business-site
+      - BRANCH=main
+      - CMS_PUBLIC_PATH=/admin
+      - GITHUB_AUTH_CLIENT_ID=Ov23lio1354pLhYFWsky
+      - GITHUB_AUTH_CLIENT_SECRET=387f2c683d80fec7f737cb6d9fc959ac44fb033c
+    ports:
+      - "8081:8081"
